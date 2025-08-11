@@ -46,9 +46,9 @@ export default function Login() {
         <link rel="canonical" href={canonical} />
       </Helmet>
 
-      <main className="min-h-screen grid place-items-center bg-background">
-        <section className="w-full max-w-md p-4">
-          <Card className="border border-border shadow-sm">
+      <main className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-gradient-to-br from-primary/5 via-accent/5 to-background">
+        <section className="w-full max-w-md mx-auto p-6 lg:p-8 flex items-center">
+          <Card className="w-full border border-border/60 shadow-xl bg-card/80 backdrop-blur-sm">
             <CardHeader className="text-center">
               <img
                 src="/lovable-uploads/f870dc56-8509-4607-9017-bb0b424fe03e.png"
@@ -56,13 +56,11 @@ export default function Login() {
                 className="mx-auto h-14 w-auto"
                 loading="eager"
               />
-              <CardTitle asChild>
-                <h1 className="text-2xl font-bold">Kedaara Performance Hub</h1>
-              </CardTitle>
+              <CardTitle className="text-2xl font-bold">Kedaara Performance Hub</CardTitle>
               <CardDescription>Elevating Excellence Together</CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 <div className="space-y-2">
                   <Label htmlFor="email">Work Email</Label>
                   <Input id="email" type="email" required placeholder="you@company.com" {...register("email")} />
@@ -93,12 +91,29 @@ export default function Login() {
               </form>
             </CardContent>
           </Card>
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            KPH is a role-based performance review portal. Dummy login enabled for now.
-          </p>
         </section>
+
+        <aside className="hidden lg:flex relative items-center justify-center p-10">
+          <div className="absolute inset-0 rounded-none bg-gradient-to-br from-primary/20 via-primary/10 to-secondary/20" aria-hidden="true" />
+          <div className="relative z-10 max-w-xl">
+            <article className="bg-card/60 backdrop-blur-md rounded-2xl p-10 border border-border/60 shadow-lg">
+              <header className="mb-4 flex items-center gap-3">
+                <img src="/lovable-uploads/f870dc56-8509-4607-9017-bb0b424fe03e.png" alt="KPH brand mark" className="h-8 w-auto" loading="lazy" />
+                <h2 className="text-3xl font-semibold text-foreground">Elevating Excellence Together</h2>
+              </header>
+              <p className="text-muted-foreground">Role-based performance reviews tailored for Kedaara.</p>
+              <ul className="mt-6 space-y-3 text-foreground">
+                <li className="flex items-start gap-2"><span className="mt-2 inline-block h-2.5 w-2.5 rounded-full bg-primary" /> Select Reviewers</li>
+                <li className="flex items-start gap-2"><span className="mt-2 inline-block h-2.5 w-2.5 rounded-full bg-primary" /> Mentor Approval</li>
+                <li className="flex items-start gap-2"><span className="mt-2 inline-block h-2.5 w-2.5 rounded-full bg-primary" /> Reviewer Feedback</li>
+                <li className="flex items-start gap-2"><span className="mt-2 inline-block h-2.5 w-2.5 rounded-full bg-primary" /> Finalize Ratings</li>
+                <li className="flex items-start gap-2"><span className="mt-2 inline-block h-2.5 w-2.5 rounded-full bg-primary" /> Appraisal Discussions</li>
+                <li className="flex items-start gap-2"><span className="mt-2 inline-block h-2.5 w-2.5 rounded-full bg-primary" /> Post-Appraisal Reflections</li>
+              </ul>
+            </article>
+          </div>
+        </aside>
       </main>
-      <link rel="canonical" href={canonical} />
     </>
   );
 }
