@@ -35,19 +35,13 @@ export function AppSidebar() {
     <Sidebar className={collapsed ? "w-14" : "w-64"} collapsible="icon">
       <SidebarContent className="relative bg-gradient-to-b from-primary/10 via-accent/5 to-background">
         {/* Brand header */}
-        <div className="flex items-center gap-3 px-3 pt-3 animate-fade-in">
+        <div className="px-3 pt-3 animate-fade-in">
           <img
             src="/lovable-uploads/f870dc56-8509-4607-9017-bb0b424fe03e.png"
             alt="KPH logo"
-            className="h-8 w-auto"
+            className="h-12 w-full object-contain"
             loading="lazy"
           />
-          {!collapsed && (
-            <div className="leading-tight">
-              <div className="font-semibold">KPH Admin</div>
-              <div className="text-[11px] text-muted-foreground">Elevating Excellence</div>
-            </div>
-          )}
         </div>
 
         <SidebarSeparator className="my-3" />

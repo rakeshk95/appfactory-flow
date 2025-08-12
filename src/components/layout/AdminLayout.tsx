@@ -18,11 +18,6 @@ export default function AdminLayout() {
             <div className="container flex h-14 items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <SidebarTrigger aria-label="Toggle sidebar" />
-                <img src="/lovable-uploads/f870dc56-8509-4607-9017-bb0b424fe03e.png" alt="KPH logo" className="h-7 w-auto" />
-                <div className="leading-tight">
-                  <Link to="/admin" className="font-semibold">Kedaara Performance Hub</Link>
-                  <p className="text-xs text-muted-foreground">Admin Console</p>
-                </div>
               </div>
               <div className="flex items-center gap-3">
                 {user && <span className="text-sm text-muted-foreground">{user.role}</span>}
