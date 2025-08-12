@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,13 @@ const employees = [
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect System Administrators to Admin Dashboard
+  useEffect(() => {
+    if (user?.role === "System Administrator") {
+      navigate("/admin", { replace: true });
+    }
+  }, [user?.role, navigate]);
   const [selectedReviewers, setSelectedReviewers] = useState<string[]>(() => {
     try {
       return JSON.parse(localStorage.getItem("kph_reviewers") || "[]");

@@ -26,6 +26,9 @@ export function AppHeader() {
         <nav className="hidden md:flex items-center gap-4 text-sm">
           <Link to="/dashboard" className={pathname === "/dashboard" ? "text-primary font-medium" : "hover:underline"}>Dashboard</Link>
           <Link to="/feedback" className={pathname === "/feedback" ? "text-primary font-medium" : "hover:underline"}>Feedback</Link>
+          {user?.role === "System Administrator" && (
+            <Link to="/admin" className={pathname.startsWith("/admin") ? "text-primary font-medium" : "hover:underline"}>Admin</Link>
+          )}
         </nav>
 
         <div className="flex items-center gap-3">
