@@ -1,5 +1,5 @@
-import { NavLink, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, MapPin, CalendarClock, BarChart3 } from "lucide-react";
+import { NavLink } from "react-router-dom";
+import { LayoutDashboard, Users, MapPin, CalendarClock } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -17,19 +17,24 @@ const items = [
   { title: "User Master", url: "/admin/users", icon: Users },
   { title: "Location Master", url: "/admin/locations", icon: MapPin },
   { title: "Review Cycle Master", url: "/admin/review-cycles", icon: CalendarClock },
-  { title: "Reports", url: "/admin", icon: BarChart3 },
 ];
 
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const { pathname } = useLocation();
+
+  const linkCls = (isActive: boolean) =>
+    isActive
+      ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow hover-scale"
+      : "text-muted-foreground hover:bg-primary/10 hover:text-primary";
 
   return (
     <Sidebar className={collapsed ? "w-14" : "w-64"} collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>System Administrator</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs uppercase tracking-wide text-foreground/70">
+            System Administrator
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -38,9 +43,7 @@ export function AppSidebar() {
                     <NavLink
                       to={item.url}
                       end={item.url === "/admin"}
-                      className={({ isActive }) =>
-                        isActive ? "bg-muted text-primary font-medium" : "hover:bg-muted/60"
-                      }
+                      className={({ isActive }) => linkCls(isActive)}
                     >
                       <item.icon className="h-4 w-4" />
                       {!collapsed && <span>{item.title}</span>}
