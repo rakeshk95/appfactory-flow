@@ -147,6 +147,7 @@ export default function Dashboard() {
             title: "User & Role Management",
             desc: "Manage access, roles, and system settings.",
             content: <p className="text-sm text-muted-foreground">Admin console placeholder.</p>,
+            action: () => navigate("/admin"),
           },
         ];
       default:

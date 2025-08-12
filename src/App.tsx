@@ -10,6 +10,11 @@ import Dashboard from "./pages/Dashboard";
 import FeedbackForm from "./pages/FeedbackForm";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import AdminLayout from "./components/layout/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import UserMaster from "./pages/admin/UserMaster";
+import LocationMaster from "./pages/admin/LocationMaster";
+import ReviewCycleMaster from "./pages/admin/ReviewCycleMaster";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +31,14 @@ const App = () => (
               <Route element={<ProtectedRoute />}> 
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/feedback" element={<FeedbackForm />} />
+              </Route>
+              <Route element={<ProtectedRoute roles={["System Administrator"]} />}> 
+                <Route path="/admin" element={<AdminLayout />} >
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="users" element={<UserMaster />} />
+                  <Route path="locations" element={<LocationMaster />} />
+                  <Route path="review-cycles" element={<ReviewCycleMaster />} />
+                </Route>
               </Route>
               <Route path="/" element={<Navigate to="/login" replace />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
