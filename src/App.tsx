@@ -15,6 +15,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import AdminLayout from "./components/layout/AdminLayout";
 import HRLeadLayout from "./components/layout/HRLeadLayout";
 import GeneralLayout from "./components/layout/GeneralLayout";
+import RoleDashboardLayout from "./components/layout/RoleDashboardLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserMaster from "./pages/admin/UserMaster";
 import LocationMaster from "./pages/admin/LocationMaster";
@@ -23,6 +24,7 @@ import MenteeSelectReviewers from "./pages/MenteeSelectReviewers";
 import MentorReviewApproval from "./pages/MentorReviewApproval";
 import ReviewerFeedback from "./pages/ReviewerFeedback";
 import GeneralDashboard from "./pages/GeneralDashboard";
+import RoleDashboardIndex from "./pages/RoleDashboardIndex";
 
 const queryClient = new QueryClient();
 
@@ -42,35 +44,18 @@ const App = () => (
                 <Route path="/feedback" element={<FeedbackForm />} />
               </Route>
 
-              {/* HR Lead specific routes with sidebar layout */}
-              <Route element={<ProtectedRoute roles={["HR Lead"]} />}> 
-                <Route path="/dashboard" element={<HRLeadLayout />}>
-                  <Route index element={<Dashboard />} />
+              {/* Unified dashboard route with role-based layout and index */}
+              <Route element={<ProtectedRoute roles={["HR Lead","Employee","Mentor","People Committee"]} />}> 
+                <Route path="/dashboard" element={<RoleDashboardLayout />}>
+                  <Route index element={<RoleDashboardIndex />} />
+                  {/* HR Lead child routes keep working under same branch */}
                   <Route path="initiate-cycle" element={<InitiatePerformanceCycle />} />
                   <Route path="review-data" element={<ReviewPerformanceData />} />
-                </Route>
-              </Route>
-
-              {/* Employee (Mentee) specific routes */}
-              <Route element={<ProtectedRoute roles={["Employee"]} />}> 
-                <Route path="/dashboard" element={<GeneralLayout />}>
-                  <Route index element={<GeneralDashboard />} />
+                  {/* Employee */}
                   <Route path="select-reviewers" element={<MenteeSelectReviewers />} />
-                </Route>
-              </Route>
-
-              {/* Mentor specific routes */}
-              <Route element={<ProtectedRoute roles={["Mentor"]} />}> 
-                <Route path="/dashboard" element={<GeneralLayout />}>
-                  <Route index element={<GeneralDashboard />} />
+                  {/* Mentor */}
                   <Route path="review-approve" element={<MentorReviewApproval />} />
-                </Route>
-              </Route>
-
-              {/* Reviewer specific routes */}
-              <Route element={<ProtectedRoute roles={["People Committee"]} />}> 
-                <Route path="/dashboard" element={<GeneralLayout />}>
-                  <Route index element={<GeneralDashboard />} />
+                  {/* Reviewer */}
                   <Route path="feedback" element={<ReviewerFeedback />} />
                 </Route>
               </Route>
