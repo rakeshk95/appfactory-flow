@@ -104,3 +104,46 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .full-width-override {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  .content-full-width {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 1.5rem !important;
+  }
+}
+
+/* Global override to disable container centering */
+.container {
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Force full width for all main content areas */
+main, .main-content, [role="main"] {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Override any potential grid constraints */
+.grid {
+  width: 100% !important;
+  max-width: none !important;
+}

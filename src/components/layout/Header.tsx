@@ -11,12 +11,6 @@ export function AppHeader() {
     <header className="border-b bg-background">
       <div className="container flex h-16 items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <img
-            src="/lovable-uploads/f870dc56-8509-4607-9017-bb0b424fe03e.png"
-            alt="KPH logo"
-            className="h-8 w-auto"
-            loading="lazy"
-          />
           <div>
             <Link to="/dashboard" className="font-semibold">Kedaara Performance Hub</Link>
             <p className="text-xs text-muted-foreground leading-none">Elevating Excellence Together</p>

@@ -2,42 +2,62 @@ import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useAuth, Role } from "@/context/AuthContext";
-import { CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-
-const roles: Role[] = [
-  "Employee",
-  "Mentor",
-  "HR Lead",
-  "People Committee",
-  "System Administrator",
-];
+import { Card, CardContent } from "@/components/ui/card";
 
 type FormValues = {
   email: string;
   password: string;
-  role: Role;
 };
 
 export default function Login() {
-  const { register, handleSubmit, setValue, watch } = useForm<FormValues>({
-    defaultValues: { email: "", password: "", role: "Employee" },
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormValues>({
+    defaultValues: { email: "", password: "" },
   });
   const navigate = useNavigate();
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (values: FormValues) => {
-    await login(values.email, values.password, values.role);
-    toast({ title: "Welcome to KPH", description: `Logged in as ${values.role}` });
-    navigate("/dashboard", { replace: true });
+    try {
+      let role: Role = "Employee";
+      
+      if (values.email.includes("admin@")) {
+        role = "System Administrator";
+      } else if (values.email.includes("mentor@")) {
+        role = "Mentor";
+      } else if (values.email.includes("hr@")) {
+        role = "HR Lead";
+      } else if (values.email.includes("committee@")) {
+        role = "People Committee";
+      }
+
+      await login(values.email, values.password, role);
+      toast({ 
+        title: "Welcome to KPH", 
+        description: `Successfully logged in as ${role}`,
+        variant: "default"
+      });
+      
+      // Role-based redirection
+      if (role === "System Administrator") {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
+    } catch (error) {
+      toast({
+        title: "Login failed",
+        description: "Please check your credentials and try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const canonical = typeof window !== "undefined" ? window.location.origin + "/login" : "/login";
@@ -50,99 +70,156 @@ export default function Login() {
         <link rel="canonical" href={canonical} />
       </Helmet>
 
-      <main className="relative min-h-screen flex items-center justify-center bg-background overflow-hidden px-6 py-12">
-        {/* Decorative gradients */}
-        <div className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/25 blur-3xl" aria-hidden="true" />
-        <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-secondary/25 blur-3xl" aria-hidden="true" />
+      <div className="min-h-screen bg-gradient-to-br from-teal-100 via-cyan-100 to-teal-200 relative overflow-hidden">
+        {/* Unified Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-teal-500/30 via-cyan-400/25 to-teal-600/20"></div>
+        <div className="absolute top-0 left-0 w-96 h-96 bg-teal-400/30 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-cyan-500/30 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-teal-400/20 to-cyan-300/20 rounded-full blur-3xl"></div>
 
-        {/* Single-section login */}
-        <section className="w-full max-w-lg animate-fade-in">
-          <div className="bg-gradient-to-b from-primary/40 via-accent/30 to-secondary/40 p-[1px] rounded-2xl shadow-2xl">
-            <div className="rounded-2xl bg-card/70 backdrop-blur-xl ring-1 ring-border/60 p-8 relative">
-              {/* Brand */}
-              <div className="mb-8 text-center">
-                <img
-                  src="/lovable-uploads/f870dc56-8509-4607-9017-bb0b424fe03e.png"
-                  alt="Kedaara Performance Hub logo"
-                  className="mx-auto h-14 w-auto"
-                  loading="eager"
-                />
-                <h1 className="mt-4 text-3xl font-semibold text-foreground">Kedaara Performance Hub</h1>
-                <p className="mt-2 text-muted-foreground">Elevating Excellence Together</p>
-              </div>
-
-              {/* Intro */}
-              <header className="mb-6 text-center">
-                <CardTitle className="text-xl">Welcome back</CardTitle>
-                <CardDescription>Sign in to continue your review journey</CardDescription>
-              </header>
-
-              {/* Form */}
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Work Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                    <Input id="email" type="email" required placeholder="you@company.com" className="pl-9" {...register("email")} />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      required
-                      placeholder="••••••••"
-                      className="pl-9 pr-10"
-                      {...register("password")}
+        <div className="relative z-10 min-h-screen flex items-center justify-center px-6 py-12">
+          <div className="w-full max-w-6xl flex items-center">
+            {/* Left Side - Brand Section */}
+            <div className="hidden lg:flex lg:w-1/2 pr-16">
+              <div className="max-w-lg">
+                {/* Kedaara Logo */}
+                <div className="mb-12">
+                  <div className="flex items-center gap-8 mb-12">
+                    <img
+                      src="/lovable-uploads/logo.png"
+                      alt="Kedaara Logo"
+                      className="w-40 h-40 object-contain"
                     />
-                    <button
-                      type="button"
-                      aria-label={showPassword ? "Hide password" : "Show password"}
-                      onClick={() => setShowPassword((s) => !s)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
+                    <div>
+                      <h1 className="text-6xl font-bold tracking-wider text-gray-900 drop-shadow-sm">KEDAARA</h1>
+                      <p className="text-teal-700 text-2xl font-semibold">Performance Hub</p>
+                    </div>
+                  </div>
+                  <div className="text-left">
+                    <p className="text-4xl font-bold text-gray-800 leading-relaxed">
+                      Elevating Excellence Together
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Side - Login Form */}
+            <div className="flex-1 flex justify-center lg:justify-end">
+              <div className="w-full max-w-md">
+                {/* Mobile Logo */}
+                <div className="lg:hidden text-center mb-8">
+                  <div className="inline-flex items-center gap-4 mb-6">
+                    <img
+                      src="/lovable-uploads/logo.png"
+                      alt="Kedaara Logo"
+                      className="w-24 h-24 object-contain"
+                    />
+                    <div className="text-left">
+                      <h1 className="text-3xl font-bold text-gray-900 tracking-wider">KEDAARA Performance Hub</h1>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <label className="flex items-center gap-2 text-sm text-foreground" htmlFor="remember">
-                    <Checkbox id="remember" />
-                    <span>Remember me</span>
-                  </label>
-                  <a href="#" className="text-sm story-link text-primary">Forgot password?</a>
-                </div>
+                {/* Login Card */}
+                <Card className="border-0 shadow-2xl bg-white/95 backdrop-blur-sm">
+                  <CardContent className="p-8">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                          Email address
+                        </Label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                          <Input
+                            id="email"
+                            type="email"
+                            placeholder="Enter your email"
+                            className="pl-10 h-12 border-gray-200 focus:border-teal-500 focus:ring-teal-500 transition-colors"
+                            {...register("email", {
+                              required: "Email is required",
+                              pattern: {
+                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                message: "Please enter a valid email address"
+                              }
+                            })}
+                          />
+                        </div>
+                        {errors.email && (
+                          <p className="text-sm text-red-600">{errors.email.message}</p>
+                        )}
+                      </div>
 
-                <div className="space-y-2">
-                  <Label>Role</Label>
-                  <Select
-                    onValueChange={(val) => setValue("role", val as Role)}
-                    defaultValue={watch("role")}
-                  >
-                    <SelectTrigger aria-label="Select role">
-                      <SelectValue placeholder="Choose your role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {roles.map((r) => (
-                        <SelectItem key={r} value={r}>
-                          {r}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                          Password
+                        </Label>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                          <Input
+                            id="password"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Enter your password"
+                            className="pl-10 pr-10 h-12 border-gray-200 focus:border-teal-500 focus:ring-teal-500 transition-colors"
+                            {...register("password", {
+                              required: "Password is required",
+                              minLength: {
+                                value: 6,
+                                message: "Password must be at least 6 characters"
+                              }
+                            })}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                          >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        </div>
+                        {errors.password && (
+                          <p className="text-sm text-red-600">{errors.password.message}</p>
+                        )}
+                      </div>
 
-                <Button type="submit" className="w-full">Sign in</Button>
-              </form>
+                      <div className="flex items-center justify-between">
+                        <label className="flex items-center gap-2 text-sm">
+                          <Checkbox id="remember" className="border-gray-300" />
+                          <span className="text-gray-600">Remember me</span>
+                        </label>
+                        <a 
+                          href="#" 
+                          className="text-sm text-teal-600 hover:text-teal-700 transition-colors font-medium"
+                        >
+                          Forgot password?
+                        </a>
+                      </div>
+
+                      <Button 
+                        type="submit" 
+                        className="w-full h-12 bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white font-semibold transition-all shadow-lg hover:shadow-xl"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? (
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            Signing in...
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            Sign in
+                            <ArrowRight className="w-4 h-4" />
+                          </div>
+                        )}
+                      </Button>
+                    </form>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
-        </section>
-      </main>
+        </div>
+      </div>
     </>
   );
 }

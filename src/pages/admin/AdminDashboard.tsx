@@ -79,10 +79,10 @@ export default function AdminDashboard() {
         <link rel="canonical" href={canonical} />
       </Helmet>
 
-      <header className="mb-6 animate-fade-in">
+      <header className="mb-4 animate-fade-in">
         <div className="flex flex-wrap items-center gap-3 justify-between">
           <div>
-            <h1 className="text-2xl font-bold">KPH Admin Dashboard</h1>
+            <h1 className="text-2xl font-bold">Admin Dashboard</h1>
             <p className="text-muted-foreground">Monitor Review Process and masters</p>
           </div>
           <div className="flex gap-2">
@@ -104,7 +104,7 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <section className="grid gap-3 md:grid-cols-2 lg:grid-cols-4 mb-4">
         {kpis.map((k) => (
           <Card key={k.label} className="shadow-sm hover-scale animate-fade-in">
             <CardHeader className="pb-2">
@@ -118,14 +118,14 @@ export default function AdminDashboard() {
         ))}
       </section>
 
-      <Separator className="my-6" />
+      <Separator className="my-4" />
 
-      <section className="grid gap-6 xl:grid-cols-3 animate-fade-in">
+      <section className="grid gap-4 xl:grid-cols-3 animate-fade-in">
         <Card className="xl:col-span-2">
-          <CardHeader>
+          <CardHeader className="pb-3">
             <CardTitle>Workflow by Stage ({type})</CardTitle>
           </CardHeader>
-          <CardContent className="h-80">
+          <CardContent className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={[...current.workflow] as any[]}>
                 <XAxis dataKey="step" tick={{ fontSize: 12 }} interval={0} angle={-12} textAnchor="end" height={60} />
@@ -138,10 +138,10 @@ export default function AdminDashboard() {
         </Card>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-3">
             <CardTitle>Ratings Distribution</CardTitle>
           </CardHeader>
-          <CardContent className="h-80">
+          <CardContent className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Tooltip />
@@ -156,12 +156,12 @@ export default function AdminDashboard() {
         </Card>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-2 mt-6 animate-fade-in">
+      <section className="grid gap-4 lg:grid-cols-2 mt-4 animate-fade-in">
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-3">
             <CardTitle>Feedback Completion Trend</CardTitle>
           </CardHeader>
-          <CardContent className="h-72">
+          <CardContent className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={current.completionTrend.map((v, i) => ({ week: `W${i + 1}`, value: v }))}>
                 <XAxis dataKey="week" />
@@ -174,7 +174,7 @@ export default function AdminDashboard() {
         </Card>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-3">
             <CardTitle>Cycle Snapshot</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-4">
