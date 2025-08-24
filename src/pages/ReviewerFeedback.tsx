@@ -10,26 +10,19 @@ import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Calendar, Users, FileText, Edit, Save, Send, Clock, CheckCircle, AlertCircle, Plus } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { apiService, PerformanceCycle } from "@/services/api";
 
 interface Employee {
-  id: string;
+  id: number;
   name: string;
   email: string;
   department: string;
   position: string;
 }
 
-interface PerformanceCycle {
-  id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-  status: "active" | "inactive";
-}
-
 interface FeedbackForm {
-  id: string;
-  employeeId: string;
+  id: number;
+  employeeId: number;
   employeeName: string;
   strengths: string;
   improvements: string;
@@ -53,28 +46,47 @@ const ReviewerFeedback: React.FC = () => {
     overallRating: "" as string,
   });
 
-  // Mock data - in real app, this would come from API
+  // Load data from API
   useEffect(() => {
-    // Simulate API call for active cycle
-    setActiveCycle({
-      id: "cycle-1",
-      name: "Q4 2024 Performance Review",
-      startDate: "2024-10-01",
-      endDate: "2024-12-31",
-      status: "active"
-    });
+    const loadData = async () => {
+      try {
+        // Load active performance cycle
+        const cycleResponse = await apiService.getActivePerformanceCycle();
+        if (cycleResponse.data) {
+          setActiveCycle(cycleResponse.data);
+        } else if (cycleResponse.error) {
+          console.error('Error loading active cycle:', cycleResponse.error);
+        }
 
-    // Simulate API call for assigned employees
-    setAssignedEmployees([
-      { id: "emp-1", name: "Alice Johnson", email: "alice.johnson@company.com", department: "Engineering", position: "Software Engineer" },
-      { id: "emp-2", name: "Bob Davis", email: "bob.davis@company.com", department: "Product", position: "Product Manager" },
-      { id: "emp-3", name: "Carol White", email: "carol.white@company.com", department: "Design", position: "UX Designer" },
-    ]);
+        // Load assigned employees
+        const employeesResponse = await apiService.getAssignedEmployees();
+        if (employeesResponse.data) {
+          // Convert API response to local format
+          const employees = employeesResponse.data.map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            email: item.email,
+            department: item.department,
+            position: item.position,
+          }));
+          setAssignedEmployees(employees);
+        } else if (employeesResponse.error) {
+          console.error('Error loading assigned employees:', employeesResponse.error);
+        }
 
-    // Load existing feedback forms from localStorage
-    const existingForms = localStorage.getItem(`feedback_forms_${user?.email}`);
-    if (existingForms) {
-      setFeedbackForms(JSON.parse(existingForms));
+        // TODO: Load existing feedback forms from API
+        // For now, keeping localStorage approach until we have the API endpoint
+        const existingForms = localStorage.getItem(`feedback_forms_${user?.email}`);
+        if (existingForms) {
+          setFeedbackForms(JSON.parse(existingForms));
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
+      }
+    };
+
+    if (user) {
+      loadData();
     }
   }, [user]);
 
@@ -229,7 +241,7 @@ const ReviewerFeedback: React.FC = () => {
         <div className="flex items-center gap-2">
           <Calendar className="h-5 w-5 text-gray-500" />
           <span className="text-sm text-gray-600">
-            {new Date(activeCycle.startDate).toLocaleDateString()} - {new Date(activeCycle.endDate).toLocaleDateString()}
+            {new Date(activeCycle.start_date).toLocaleDateString()} - {new Date(activeCycle.end_date).toLocaleDateString()}
           </span>
         </div>
       </div>

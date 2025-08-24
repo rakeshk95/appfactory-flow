@@ -8,25 +8,18 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Calendar, Users, Send, Edit, CheckCircle, AlertCircle } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { apiService, PerformanceCycle, User, ReviewerSelection } from "@/services/api";
 
 interface Reviewer {
-  id: string;
+  id: number;
   name: string;
   email: string;
   department: string;
   position: string;
 }
 
-interface PerformanceCycle {
-  id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-  status: "active" | "inactive";
-}
-
 interface ReviewerSubmission {
-  id: string;
+  id: number;
   reviewers: Reviewer[];
   status: "pending" | "approved" | "sent_back";
   submittedAt: string;
@@ -37,39 +30,60 @@ const MenteeSelectReviewers: React.FC = () => {
   const { user } = useAuth();
   const [activeCycle, setActiveCycle] = useState<PerformanceCycle | null>(null);
   const [availableReviewers, setAvailableReviewers] = useState<Reviewer[]>([]);
-  const [selectedReviewers, setSelectedReviewers] = useState<string[]>([]);
+  const [selectedReviewers, setSelectedReviewers] = useState<number[]>([]);
   const [submission, setSubmission] = useState<ReviewerSubmission | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Mock data - in real app, this would come from API
+  // Load data from API
   useEffect(() => {
-    // Simulate API call for active cycle
-    setActiveCycle({
-      id: "cycle-1",
-      name: "Q4 2024 Performance Review",
-      startDate: "2024-10-01",
-      endDate: "2024-12-31",
-      status: "active"
-    });
+    const loadData = async () => {
+      try {
+        // Load active performance cycle
+        const cycleResponse = await apiService.getActivePerformanceCycle();
+        if (cycleResponse.data) {
+          setActiveCycle(cycleResponse.data);
+        } else if (cycleResponse.error) {
+          console.error('Error loading active cycle:', cycleResponse.error);
+        }
 
-    // Simulate API call for available reviewers
-    setAvailableReviewers([
-      { id: "1", name: "John Smith", email: "john.smith@company.com", department: "Engineering", position: "Senior Engineer" },
-      { id: "2", name: "Sarah Johnson", email: "sarah.johnson@company.com", department: "Product", position: "Product Manager" },
-      { id: "3", name: "Mike Davis", email: "mike.davis@company.com", department: "Design", position: "UX Designer" },
-      { id: "4", name: "Lisa Wilson", email: "lisa.wilson@company.com", department: "Engineering", position: "Tech Lead" },
-      { id: "5", name: "David Brown", email: "david.brown@company.com", department: "Marketing", position: "Marketing Manager" },
-    ]);
+        // Load available reviewers
+        const reviewersResponse = await apiService.getAvailableReviewers(true);
+        if (reviewersResponse.data) {
+          setAvailableReviewers(reviewersResponse.data);
+        } else if (reviewersResponse.error) {
+          console.error('Error loading reviewers:', reviewersResponse.error);
+        }
 
-    // Check for existing submission
-    const existingSubmission = localStorage.getItem(`reviewer_submission_${user?.email}`);
-    if (existingSubmission) {
-      setSubmission(JSON.parse(existingSubmission));
-      if (JSON.parse(existingSubmission).status === "sent_back") {
-        setSelectedReviewers(JSON.parse(existingSubmission).reviewers.map((r: Reviewer) => r.id));
-        setIsEditing(true);
+        // Check for existing submission
+        const existingSubmissionResponse = await apiService.getMyReviewerSelection();
+        if (existingSubmissionResponse.data) {
+          const existingSubmission = existingSubmissionResponse.data;
+          // Convert API response to local format
+          const submissionData: ReviewerSubmission = {
+            id: existingSubmission.id,
+            reviewers: [], // This would need to be populated from reviewer_selection_details
+            status: existingSubmission.status as "pending" | "approved" | "sent_back",
+            submittedAt: existingSubmission.submitted_at,
+            mentorFeedback: existingSubmission.mentor_feedback,
+          };
+          setSubmission(submissionData);
+          
+          if (existingSubmission.status === "sent_back") {
+            // Note: In a real implementation, you'd need to fetch the selected reviewers
+            // from the reviewer_selection_details table
+            setIsEditing(true);
+          }
+        } else if (existingSubmissionResponse.error && existingSubmissionResponse.error !== 'No reviewer selection found') {
+          console.error('Error loading existing submission:', existingSubmissionResponse.error);
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
       }
+    };
+
+    if (user) {
+      loadData();
     }
   }, [user]);
 
@@ -87,23 +101,41 @@ const MenteeSelectReviewers: React.FC = () => {
       return;
     }
 
+    if (!activeCycle) {
+      alert("No active performance cycle found");
+      return;
+    }
+
     setIsSubmitting(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      const response = await apiService.submitReviewerSelection({
+        performance_cycle_id: activeCycle.id,
+        selected_reviewers: selectedReviewers,
+        comments: undefined,
+      });
 
-    const selectedReviewerObjects = availableReviewers.filter(r => selectedReviewers.includes(r.id));
-    const newSubmission: ReviewerSubmission = {
-      id: Date.now().toString(),
-      reviewers: selectedReviewerObjects,
-      status: "pending",
-      submittedAt: new Date().toISOString(),
-    };
+      if (response.data) {
+        const selectedReviewerObjects = availableReviewers.filter(r => selectedReviewers.includes(r.id));
+        const newSubmission: ReviewerSubmission = {
+          id: response.data.id,
+          reviewers: selectedReviewerObjects,
+          status: "pending",
+          submittedAt: response.data.submitted_at,
+        };
 
-    setSubmission(newSubmission);
-    localStorage.setItem(`reviewer_submission_${user?.email}`, JSON.stringify(newSubmission));
-    setIsSubmitting(false);
-    setIsEditing(false);
+        setSubmission(newSubmission);
+        alert("Reviewer selection submitted successfully!");
+      } else if (response.error) {
+        alert(`Error submitting selection: ${response.error}`);
+      }
+    } catch (error) {
+      alert("Error submitting selection. Please try again.");
+      console.error('Error:', error);
+    } finally {
+      setIsSubmitting(false);
+      setIsEditing(false);
+    }
   };
 
   const handleResubmit = async () => {
@@ -112,24 +144,42 @@ const MenteeSelectReviewers: React.FC = () => {
       return;
     }
 
+    if (!activeCycle) {
+      alert("No active performance cycle found");
+      return;
+    }
+
     setIsSubmitting(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      const response = await apiService.submitReviewerSelection({
+        performance_cycle_id: activeCycle.id,
+        selected_reviewers: selectedReviewers,
+        comments: undefined,
+      });
 
-    const selectedReviewerObjects = availableReviewers.filter(r => selectedReviewers.includes(r.id));
-    const updatedSubmission: ReviewerSubmission = {
-      ...submission!,
-      reviewers: selectedReviewerObjects,
-      status: "pending",
-      submittedAt: new Date().toISOString(),
-      mentorFeedback: undefined,
-    };
+      if (response.data) {
+        const selectedReviewerObjects = availableReviewers.filter(r => selectedReviewers.includes(r.id));
+        const updatedSubmission: ReviewerSubmission = {
+          ...submission!,
+          reviewers: selectedReviewerObjects,
+          status: "pending",
+          submittedAt: response.data.submitted_at,
+          mentorFeedback: undefined,
+        };
 
-    setSubmission(updatedSubmission);
-    localStorage.setItem(`reviewer_submission_${user?.email}`, JSON.stringify(updatedSubmission));
-    setIsSubmitting(false);
-    setIsEditing(false);
+        setSubmission(updatedSubmission);
+        alert("Reviewer selection resubmitted successfully!");
+      } else if (response.error) {
+        alert(`Error resubmitting selection: ${response.error}`);
+      }
+    } catch (error) {
+      alert("Error resubmitting selection. Please try again.");
+      console.error('Error:', error);
+    } finally {
+      setIsSubmitting(false);
+      setIsEditing(false);
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -168,7 +218,7 @@ const MenteeSelectReviewers: React.FC = () => {
         <div className="flex items-center gap-2">
           <Calendar className="h-5 w-5 text-gray-500" />
           <span className="text-sm text-gray-600">
-            {new Date(activeCycle.startDate).toLocaleDateString()} - {new Date(activeCycle.endDate).toLocaleDateString()}
+            {new Date(activeCycle.start_date).toLocaleDateString()} - {new Date(activeCycle.end_date).toLocaleDateString()}
           </span>
         </div>
       </div>
@@ -189,11 +239,11 @@ const MenteeSelectReviewers: React.FC = () => {
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Start Date</p>
-              <p className="text-lg font-semibold">{new Date(activeCycle.startDate).toLocaleDateString()}</p>
+              <p className="text-lg font-semibold">{new Date(activeCycle.start_date).toLocaleDateString()}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">End Date</p>
-              <p className="text-lg font-semibold">{new Date(activeCycle.endDate).toLocaleDateString()}</p>
+              <p className="text-lg font-semibold">{new Date(activeCycle.end_date).toLocaleDateString()}</p>
             </div>
           </div>
         </CardContent>

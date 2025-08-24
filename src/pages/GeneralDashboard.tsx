@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,10 +14,32 @@ import {
   TrendingUp,
   UserCheck
 } from "lucide-react";
+import { apiService } from "@/services/api";
 
 const GeneralDashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [dashboardStats, setDashboardStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadDashboardStats = async () => {
+      if (!user) return;
+      
+      try {
+        const response = await apiService.getDashboardStats();
+        if (response.data) {
+          setDashboardStats(response.data);
+        }
+      } catch (error) {
+        console.error('Error loading dashboard stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboardStats();
+  }, [user]);
 
   const getDashboardContent = () => {
     if (!user) return null;
@@ -46,8 +68,8 @@ const GeneralDashboard: React.FC = () => {
             },
           ],
           stats: [
-            { label: "Reviewers Selected", value: "2", icon: Users },
-            { label: "Submission Status", value: "Pending", icon: Clock },
+            { label: "Reviewers Selected", value: dashboardStats?.reviewers_selected || "0", icon: Users },
+            { label: "Submission Status", value: dashboardStats?.submission_status || "Not Submitted", icon: Clock },
           ]
         };
 
@@ -74,8 +96,8 @@ const GeneralDashboard: React.FC = () => {
             },
           ],
           stats: [
-            { label: "Pending Approvals", value: "3", icon: Clock },
-            { label: "Approved Today", value: "1", icon: CheckCircle },
+            { label: "Pending Approvals", value: dashboardStats?.pending_approvals || "0", icon: Clock },
+            { label: "Approved Today", value: dashboardStats?.approved_today || "0", icon: CheckCircle },
           ]
         };
 
@@ -102,8 +124,8 @@ const GeneralDashboard: React.FC = () => {
             },
           ],
           stats: [
-            { label: "Pending Reviews", value: "2", icon: Clock },
-            { label: "Completed Reviews", value: "1", icon: CheckCircle },
+            { label: "Pending Reviews", value: dashboardStats?.pending_reviews || "0", icon: Clock },
+            { label: "Draft Reviews", value: dashboardStats?.draft_reviews || "0", icon: AlertCircle },
           ]
         };
 
@@ -118,6 +140,18 @@ const GeneralDashboard: React.FC = () => {
   };
 
   const content = getDashboardContent();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4 animate-spin" />
+          <h3 className="text-lg font-medium text-gray-900">Loading Dashboard...</h3>
+          <p className="text-gray-500">Please wait while we load your dashboard data.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!content) {
     return (
@@ -189,35 +223,37 @@ const GeneralDashboard: React.FC = () => {
       </div>
 
       {/* Performance Cycle Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Current Performance Cycle
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <p className="text-sm font-medium text-gray-500">Cycle Name</p>
-              <p className="text-lg font-semibold">Q4 2024 Performance Review</p>
+      {dashboardStats?.performance_cycle && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Current Performance Cycle
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <p className="text-sm font-medium text-gray-500">Cycle Name</p>
+                <p className="text-lg font-semibold">{dashboardStats.performance_cycle.name}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">Start Date</p>
+                <p className="text-lg font-semibold">{new Date(dashboardStats.performance_cycle.start_date).toLocaleDateString()}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">End Date</p>
+                <p className="text-lg font-semibold">{new Date(dashboardStats.performance_cycle.end_date).toLocaleDateString()}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">Start Date</p>
-              <p className="text-lg font-semibold">October 1, 2024</p>
+            <div className="mt-4">
+              <Badge variant="default" className="bg-green-100 text-green-800">
+                {dashboardStats.performance_cycle.status}
+              </Badge>
             </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500">End Date</p>
-              <p className="text-lg font-semibold">December 31, 2024</p>
-            </div>
-          </div>
-          <div className="mt-4">
-            <Badge variant="default" className="bg-green-100 text-green-800">
-              Active
-            </Badge>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

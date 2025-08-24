@@ -10,6 +10,7 @@ import { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
+import { apiService } from "@/services/api";
 
 type FormValues = {
   email: string;
@@ -26,30 +27,37 @@ export default function Login() {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      let role: Role = "Employee";
-      
-      if (values.email.includes("admin@")) {
-        role = "System Administrator";
-      } else if (values.email.includes("mentor@")) {
-        role = "Mentor";
-      } else if (values.email.includes("hr@")) {
-        role = "HR Lead";
-      } else if (values.email.includes("committee@")) {
-        role = "People Committee";
-      }
-
-      await login(values.email, values.password, role);
-      toast({ 
-        title: "Welcome to KPH", 
-        description: `Successfully logged in as ${role}`,
-        variant: "default"
+      // Call the real API for authentication
+      const response = await apiService.login({
+        email: values.email,
+        password: values.password,
       });
-      
-      // Role-based redirection
-      if (role === "System Administrator") {
-        navigate("/admin", { replace: true });
-      } else {
-        navigate("/dashboard", { replace: true });
+
+      if (response.data) {
+        // Use the role from the API response
+        const role = response.data.user.role as Role;
+        
+        // Login with the user data from API
+        await login(values.email, values.password, role);
+        
+        toast({ 
+          title: "Welcome to KPH", 
+          description: `Successfully logged in as ${role}`,
+          variant: "default"
+        });
+        
+        // Role-based redirection
+        if (role === "System Administrator") {
+          navigate("/admin", { replace: true });
+        } else {
+          navigate("/dashboard", { replace: true });
+        }
+      } else if (response.error) {
+        toast({
+          title: "Login failed",
+          description: response.error,
+          variant: "destructive"
+        });
       }
     } catch (error) {
       toast({

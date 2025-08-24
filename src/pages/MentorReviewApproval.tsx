@@ -8,26 +8,19 @@ import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Calendar, Users, CheckCircle, XCircle, Eye, Clock, AlertCircle } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { apiService, PerformanceCycle } from "@/services/api";
 
 interface Reviewer {
-  id: string;
+  id: number;
   name: string;
   email: string;
   department: string;
   position: string;
 }
 
-interface PerformanceCycle {
-  id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-  status: "active" | "inactive";
-}
-
 interface MenteeSubmission {
-  id: string;
-  menteeId: string;
+  id: number;
+  menteeId: number;
   menteeName: string;
   menteeEmail: string;
   reviewers: Reviewer[];
@@ -45,57 +38,42 @@ const MentorReviewApproval: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Mock data - in real app, this would come from API
+  // Load data from API
   useEffect(() => {
-    // Simulate API call for active cycle
-    setActiveCycle({
-      id: "cycle-1",
-      name: "Q4 2024 Performance Review",
-      startDate: "2024-10-01",
-      endDate: "2024-12-31",
-      status: "active"
-    });
+    const loadData = async () => {
+      try {
+        // Load active performance cycle
+        const cycleResponse = await apiService.getActivePerformanceCycle();
+        if (cycleResponse.data) {
+          setActiveCycle(cycleResponse.data);
+        } else if (cycleResponse.error) {
+          console.error('Error loading active cycle:', cycleResponse.error);
+        }
 
-    // Simulate API call for mentee submissions
-    setMenteeSubmissions([
-      {
-        id: "sub-1",
-        menteeId: "mentee-1",
-        menteeName: "Alice Johnson",
-        menteeEmail: "alice.johnson@company.com",
-        reviewers: [
-          { id: "1", name: "John Smith", email: "john.smith@company.com", department: "Engineering", position: "Senior Engineer" },
-          { id: "2", name: "Sarah Wilson", email: "sarah.wilson@company.com", department: "Product", position: "Product Manager" },
-        ],
-        status: "pending",
-        submittedAt: "2024-10-15T10:30:00Z",
-      },
-      {
-        id: "sub-2",
-        menteeId: "mentee-2",
-        menteeName: "Bob Davis",
-        menteeEmail: "bob.davis@company.com",
-        reviewers: [
-          { id: "3", name: "Mike Brown", email: "mike.brown@company.com", department: "Design", position: "UX Designer" },
-          { id: "4", name: "Lisa Garcia", email: "lisa.garcia@company.com", department: "Engineering", position: "Tech Lead" },
-          { id: "5", name: "David Lee", email: "david.lee@company.com", department: "Marketing", position: "Marketing Manager" },
-        ],
-        status: "pending",
-        submittedAt: "2024-10-16T14:20:00Z",
-      },
-      {
-        id: "sub-3",
-        menteeId: "mentee-3",
-        menteeName: "Carol White",
-        menteeEmail: "carol.white@company.com",
-        reviewers: [
-          { id: "1", name: "John Smith", email: "john.smith@company.com", department: "Engineering", position: "Senior Engineer" },
-        ],
-        status: "sent_back",
-        submittedAt: "2024-10-14T09:15:00Z",
-        mentorFeedback: "Please add at least one more reviewer for a more comprehensive feedback.",
-      },
-    ]);
+        // Load pending approvals
+        const approvalsResponse = await apiService.getPendingApprovals();
+        if (approvalsResponse.data) {
+          // Convert API response to local format
+          const submissions = approvalsResponse.data.map((item: any) => ({
+            id: item.id,
+            menteeId: item.mentee_id,
+            menteeName: item.mentee_name || 'Unknown',
+            menteeEmail: item.mentee_email || 'unknown@company.com',
+            reviewers: [], // This would need to be populated from reviewer_selection_details
+            status: item.status as "pending" | "approved" | "sent_back",
+            submittedAt: item.submitted_at,
+            mentorFeedback: item.mentor_feedback,
+          }));
+          setMenteeSubmissions(submissions);
+        } else if (approvalsResponse.error) {
+          console.error('Error loading pending approvals:', approvalsResponse.error);
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
+      }
+    };
+
+    loadData();
   }, []);
 
   const handleViewSubmission = (submission: MenteeSubmission) => {
@@ -187,7 +165,7 @@ const MentorReviewApproval: React.FC = () => {
         <div className="flex items-center gap-2">
           <Calendar className="h-5 w-5 text-gray-500" />
           <span className="text-sm text-gray-600">
-            {new Date(activeCycle.startDate).toLocaleDateString()} - {new Date(activeCycle.endDate).toLocaleDateString()}
+            {new Date(activeCycle.start_date).toLocaleDateString()} - {new Date(activeCycle.end_date).toLocaleDateString()}
           </span>
         </div>
       </div>

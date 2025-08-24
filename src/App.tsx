@@ -25,6 +25,7 @@ import MentorReviewApproval from "./pages/MentorReviewApproval";
 import ReviewerFeedback from "./pages/ReviewerFeedback";
 import GeneralDashboard from "./pages/GeneralDashboard";
 import RoleDashboardIndex from "./pages/RoleDashboardIndex";
+import ApiTest from "./pages/ApiTest";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
               {/* General protected routes */}
               <Route element={<ProtectedRoute />}> 
                 <Route path="/feedback" element={<FeedbackForm />} />
+                <Route path="/api-test" element={<ApiTest />} />
               </Route>
 
               {/* Unified dashboard route with role-based layout and index */}
