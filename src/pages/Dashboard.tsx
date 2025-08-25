@@ -394,6 +394,26 @@ export default function Dashboard() {
             ),
           },
           {
+            title: "My Reflections",
+            desc: "View your reflections that were entered in this cycle.",
+            icon: MessageSquare,
+            content: (
+              <div className="space-y-3">
+                <Label htmlFor="myReflections">Your reflections for this cycle</Label>
+                <Textarea
+                  id="myReflections"
+                  value={reflection}
+                  readOnly
+                  className="min-h-[120px] bg-gray-50"
+                  placeholder="No reflections entered yet for this cycle."
+                />
+                <div className="text-sm text-muted-foreground">
+                  This field shows the reflections you have entered for the current performance cycle. It is read-only.
+                </div>
+              </div>
+            ),
+          },
+          {
             title: "Post-Appraisal Reflection",
             desc: "Capture your reflections after the appraisal discussion with your mentor.",
             icon: MessageSquare,

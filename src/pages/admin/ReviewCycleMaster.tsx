@@ -343,60 +343,61 @@ export default function ReviewCycleMaster() {
                     Add Review Cycle
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[600px] bg-white/95 backdrop-blur-sm">
-                  <DialogHeader>
-                    <DialogTitle className="text-xl font-bold text-gray-900">
+                <DialogContent className="w-[420px] max-w-[85vw] mx-auto bg-white/95 backdrop-blur-sm border-0 shadow-2xl rounded-xl p-0">
+                  <DialogHeader className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+                    <DialogTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                      <CalendarClock className="h-5 w-5 text-teal-600" />
                       {rows.some((r) => r.id === editing?.id) ? "Edit Review Cycle" : "Add New Review Cycle"}
                     </DialogTitle>
                   </DialogHeader>
                   {editing && (
-                    <div className="grid gap-4">
-                      <div className="grid gap-2">
-                        <Label className="font-medium text-gray-700">Cycle Name</Label>
-                        <Input 
-                          value={editing.name} 
-                          onChange={(e) => setEditing({ ...editing, name: e.target.value })}
-                          className="border-gray-200 focus:border-teal-300 focus:ring-teal-200"
-                          placeholder="Enter review cycle name"
-                        />
+                    <div className="space-y-3 p-5">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-gray-700">Cycle Name</Label>
+                                                 <Input 
+                           value={editing.name} 
+                           onChange={(e) => setEditing({ ...editing, name: e.target.value })}
+                           className="h-8 border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm"
+                           placeholder="Enter review cycle name"
+                         />
                       </div>
-                      <div className="grid gap-2">
-                        <Label className="font-medium text-gray-700">Description</Label>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-gray-700">Description</Label>
                         <Textarea 
                           value={editing.description} 
                           onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-                          className="border-gray-200 focus:border-teal-300 focus:ring-teal-200"
+                          className="border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm"
                           placeholder="Enter cycle description"
-                          rows={3}
+                          rows={2}
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="grid gap-2">
-                          <Label className="font-medium text-gray-700">Start Date</Label>
-                          <Input 
-                            type="date"
-                            value={editing.startDate} 
-                            onChange={(e) => setEditing({ ...editing, startDate: e.target.value })}
-                            className="border-gray-200 focus:border-teal-300 focus:ring-teal-200"
-                          />
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium text-gray-700">Start Date</Label>
+                                                   <Input 
+                           type="date"
+                           value={editing.startDate} 
+                           onChange={(e) => setEditing({ ...editing, startDate: e.target.value })}
+                           className="h-8 border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm"
+                         />
                         </div>
-                        <div className="grid gap-2">
-                          <Label className="font-medium text-gray-700">End Date</Label>
-                          <Input 
-                            type="date"
-                            value={editing.endDate} 
-                            onChange={(e) => setEditing({ ...editing, endDate: e.target.value })}
-                            className="border-gray-200 focus:border-teal-300 focus:ring-teal-200"
-                          />
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium text-gray-700">End Date</Label>
+                                                   <Input 
+                           type="date"
+                           value={editing.endDate} 
+                           onChange={(e) => setEditing({ ...editing, endDate: e.target.value })}
+                           className="h-8 border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm"
+                         />
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="grid gap-2">
-                          <Label className="font-medium text-gray-700">Type</Label>
-                          <Select value={editing.type} onValueChange={(v) => setEditing({ ...editing, type: v as "annual" | "mid-year" | "quarterly" | "project-based" })}>
-                            <SelectTrigger className="border-gray-200 focus:border-teal-300 focus:ring-teal-200">
-                              <SelectValue placeholder="Select type" />
-                            </SelectTrigger>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium text-gray-700">Type</Label>
+                                                   <Select value={editing.type} onValueChange={(v) => setEditing({ ...editing, type: v as "annual" | "mid-year" | "quarterly" | "project-based" })}>
+                           <SelectTrigger className="h-8 border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm">
+                             <SelectValue placeholder="Select type" />
+                           </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="annual">Annual</SelectItem>
                               <SelectItem value="mid-year">Mid-Year</SelectItem>
@@ -405,12 +406,12 @@ export default function ReviewCycleMaster() {
                             </SelectContent>
                           </Select>
                         </div>
-                        <div className="grid gap-2">
-                          <Label className="font-medium text-gray-700">Status</Label>
-                          <Select value={editing.status} onValueChange={(v) => setEditing({ ...editing, status: v as "draft" | "active" | "completed" | "cancelled" })}>
-                            <SelectTrigger className="border-gray-200 focus:border-teal-300 focus:ring-teal-200">
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium text-gray-700">Status</Label>
+                                                   <Select value={editing.status} onValueChange={(v) => setEditing({ ...editing, status: v as "draft" | "active" | "completed" | "cancelled" })}>
+                           <SelectTrigger className="h-8 border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm">
+                             <SelectValue placeholder="Select status" />
+                           </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="draft">Draft</SelectItem>
                               <SelectItem value="active">Active</SelectItem>
@@ -420,27 +421,27 @@ export default function ReviewCycleMaster() {
                           </Select>
                         </div>
                       </div>
-                      <div className="grid gap-2">
-                        <Label className="font-medium text-gray-700">Expected Participants</Label>
-                        <Input 
-                          type="number"
-                          value={editing.participants} 
-                          onChange={(e) => setEditing({ ...editing, participants: parseInt(e.target.value) || 0 })}
-                          className="border-gray-200 focus:border-teal-300 focus:ring-teal-200"
-                          placeholder="Enter number of participants"
-                        />
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-gray-700">Expected Participants</Label>
+                                                 <Input 
+                           type="number"
+                           value={editing.participants} 
+                           onChange={(e) => setEditing({ ...editing, participants: parseInt(e.target.value) || 0 })}
+                           className="h-8 border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm"
+                           placeholder="Enter number of participants"
+                         />
                       </div>
-                      <div className="flex justify-end gap-3 pt-4">
+                      <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-6">
                         <Button 
                           variant="outline" 
                           onClick={() => setOpen(false)}
-                          className="border-gray-200 text-gray-700 hover:bg-gray-50"
+                          className="h-8 px-3 text-sm border-gray-200 text-gray-700 hover:bg-gray-50"
                         >
                           Cancel
                         </Button>
                         <Button 
                           onClick={submit}
-                          className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white"
+                          className="h-8 px-4 text-sm bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white"
                         >
                           {rows.some((r) => r.id === editing.id) ? "Update Cycle" : "Create Cycle"}
                         </Button>

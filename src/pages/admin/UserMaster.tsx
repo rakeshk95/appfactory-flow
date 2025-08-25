@@ -268,48 +268,49 @@ export default function UserMaster() {
                     Add User
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[520px] bg-white/95 backdrop-blur-sm">
-                  <DialogHeader>
-                    <DialogTitle className="text-xl font-bold text-gray-900">
+                <DialogContent className="w-[380px] max-w-[85vw] mx-auto bg-white/95 backdrop-blur-sm border-0 shadow-2xl rounded-xl p-0">
+                  <DialogHeader className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+                    <DialogTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                      <Users className="h-5 w-5 text-teal-600" />
                       {rows.some((r) => r.id === editing?.id) ? "Edit User" : "Add New User"}
                     </DialogTitle>
                   </DialogHeader>
                   {editing && (
-                    <div className="grid gap-4">
-                      <div className="grid gap-2">
-                        <Label className="font-medium text-gray-700">Full Name</Label>
-                        <Input 
-                          value={editing.name} 
-                          onChange={(e) => setEditing({ ...editing, name: e.target.value })}
-                          className="border-gray-200 focus:border-teal-300 focus:ring-teal-200"
-                          placeholder="Enter full name"
-                        />
+                    <div className="space-y-3 p-5">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-gray-700">Full Name</Label>
+                                                 <Input 
+                           value={editing.name} 
+                           onChange={(e) => setEditing({ ...editing, name: e.target.value })}
+                           className="h-8 border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm"
+                           placeholder="Enter full name"
+                         />
                       </div>
-                      <div className="grid gap-2">
-                        <Label className="font-medium text-gray-700">Email Address</Label>
-                        <Input 
-                          type="email" 
-                          value={editing.email} 
-                          onChange={(e) => setEditing({ ...editing, email: e.target.value })}
-                          className="border-gray-200 focus:border-teal-300 focus:ring-teal-200"
-                          placeholder="Enter email address"
-                        />
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-gray-700">Email Address</Label>
+                                                 <Input 
+                           type="email" 
+                           value={editing.email} 
+                           onChange={(e) => setEditing({ ...editing, email: e.target.value })}
+                           className="h-8 border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm"
+                           placeholder="Enter email address"
+                         />
                       </div>
-                      <div className="grid gap-2">
-                        <Label className="font-medium text-gray-700">Department</Label>
-                        <Input 
-                          value={editing.department || ""} 
-                          onChange={(e) => setEditing({ ...editing, department: e.target.value })}
-                          className="border-gray-200 focus:border-teal-300 focus:ring-teal-200"
-                          placeholder="Enter department"
-                        />
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-gray-700">Department</Label>
+                                                 <Input 
+                           value={editing.department || ""} 
+                           onChange={(e) => setEditing({ ...editing, department: e.target.value })}
+                           className="h-8 border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm"
+                           placeholder="Enter department"
+                         />
                       </div>
-                      <div className="grid gap-2">
-                        <Label className="font-medium text-gray-700">Role</Label>
-                        <Select value={editing.role} onValueChange={(v) => setEditing({ ...editing, role: v as Role })}>
-                          <SelectTrigger className="border-gray-200 focus:border-teal-300 focus:ring-teal-200">
-                            <SelectValue placeholder="Select role" />
-                          </SelectTrigger>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-gray-700">Role</Label>
+                                                 <Select value={editing.role} onValueChange={(v) => setEditing({ ...editing, role: v as Role })}>
+                           <SelectTrigger className="h-8 border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm">
+                             <SelectValue placeholder="Select role" />
+                           </SelectTrigger>
                           <SelectContent>
                             {(["Employee", "Mentor", "HR Lead", "People Committee", "System Administrator"] as const).map((r) => (
                               <SelectItem key={r} value={r}>{r}</SelectItem>
@@ -317,29 +318,29 @@ export default function UserMaster() {
                           </SelectContent>
                         </Select>
                       </div>
-                      <div className="grid gap-2">
-                        <Label className="font-medium text-gray-700">Status</Label>
-                        <Select value={editing.status} onValueChange={(v) => setEditing({ ...editing, status: v as "active" | "inactive" })}>
-                          <SelectTrigger className="border-gray-200 focus:border-teal-300 focus:ring-teal-200">
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-gray-700">Status</Label>
+                                                 <Select value={editing.status} onValueChange={(v) => setEditing({ ...editing, status: v as "active" | "inactive" })}>
+                           <SelectTrigger className="h-8 border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm">
+                             <SelectValue placeholder="Select status" />
+                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="active">Active</SelectItem>
                             <SelectItem value="inactive">Inactive</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
-                      <div className="flex justify-end gap-3 pt-4">
+                      <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-6">
                         <Button 
                           variant="outline" 
                           onClick={() => setOpen(false)}
-                          className="border-gray-200 text-gray-700 hover:bg-gray-50"
+                          className="h-8 px-3 text-sm border-gray-200 text-gray-700 hover:bg-gray-50"
                         >
                           Cancel
                         </Button>
                         <Button 
                           onClick={submit}
-                          className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white"
+                          className="h-8 px-4 text-sm bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white"
                         >
                           {rows.some((r) => r.id === editing.id) ? "Update User" : "Create User"}
                         </Button>

@@ -27,15 +27,52 @@ export default function Login() {
 
   const onSubmit = async (values: FormValues) => {
     try {
+      console.log("Attempting login with:", values.email);
+      
+      // First, let's check if the backend is reachable
+      console.log("Checking backend health...");
+      const healthResponse = await apiService.healthCheck();
+      console.log("Health check response:", healthResponse);
+      
+      // If backend is not reachable, use fallback login
+      if (healthResponse.error) {
+        console.log("Backend not reachable, using fallback login");
+        
+        // Fallback login for development
+        if (values.email === "admin@kedaara.com" && values.password === "admin123") {
+          const role: Role = "System Administrator";
+          await login(values.email, values.password, role);
+          
+          toast({ 
+            title: "Welcome to KPH (Fallback Mode)", 
+            description: `Logged in as ${role} - Backend not available`,
+            variant: "default"
+          });
+          
+          navigate("/admin", { replace: true });
+          return;
+        } else {
+          toast({
+            title: "Login failed",
+            description: "Backend not available. Use admin@kedaara.com / admin123 for fallback login.",
+            variant: "destructive"
+          });
+          return;
+        }
+      }
+      
       // Call the real API for authentication
       const response = await apiService.login({
         email: values.email,
         password: values.password,
       });
 
+      console.log("API response:", response);
+
       if (response.data) {
         // Use the role from the API response
         const role = response.data.user.role as Role;
+        console.log("Login successful, role:", role);
         
         // Login with the user data from API
         await login(values.email, values.password, role);
@@ -53,13 +90,22 @@ export default function Login() {
           navigate("/dashboard", { replace: true });
         }
       } else if (response.error) {
+        console.error("Login failed with error:", response.error);
         toast({
           title: "Login failed",
           description: response.error,
           variant: "destructive"
         });
+      } else {
+        console.error("Login failed - no data or error in response");
+        toast({
+          title: "Login failed",
+          description: "Invalid response from server",
+          variant: "destructive"
+        });
       }
     } catch (error) {
+      console.error("Login exception:", error);
       toast({
         title: "Login failed",
         description: "Please check your credentials and try again.",

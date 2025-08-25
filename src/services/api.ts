@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8000/api/v1';
+const API_BASE_URL = 'http://192.168.2.35:8000/api/v1';
 
 // API Response types
 interface ApiResponse<T> {
@@ -94,6 +94,9 @@ class ApiService {
     const url = `${API_BASE_URL}${endpoint}`;
     const token = this.getToken();
 
+    console.log("Making request to:", url);
+    console.log("Request config:", { method: options.method || 'GET', headers: options.headers });
+
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
@@ -104,10 +107,27 @@ class ApiService {
     };
 
     try {
-      const response = await fetch(url, config);
+      console.log("Sending fetch request...");
+      
+      // Add timeout to the fetch request
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
+      const response = await fetch(url, {
+        ...config,
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      console.log("Response status:", response.status);
+      console.log("Response headers:", Object.fromEntries(response.headers.entries()));
+      
       const data = await response.json();
+      console.log("Response data:", data);
 
       if (!response.ok) {
+        console.log("Request failed with status:", response.status);
         return {
           error: data.detail || `HTTP error! status: ${response.status}`,
         };
@@ -115,6 +135,14 @@ class ApiService {
 
       return { data };
     } catch (error) {
+      console.error("Request failed with error:", error);
+      
+      if (error instanceof Error && error.name === 'AbortError') {
+        return {
+          error: 'Request timeout - server is not responding',
+        };
+      }
+      
       return {
         error: error instanceof Error ? error.message : 'Network error',
       };
@@ -123,10 +151,15 @@ class ApiService {
 
   // Authentication endpoints
   async login(credentials: LoginRequest): Promise<ApiResponse<LoginResponse>> {
+    console.log("Making login request to:", `${API_BASE_URL}/auth/login`);
+    console.log("Credentials:", { email: credentials.email, password: "***" });
+    
     const response = await this.request<LoginResponse>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
+
+    console.log("Login response:", response);
 
     if (response.data) {
       this.setToken(response.data.access_token);

@@ -318,30 +318,31 @@ export default function LocationMaster() {
                     Add Location
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[600px] bg-white/95 backdrop-blur-sm">
-                  <DialogHeader>
-                    <DialogTitle className="text-xl font-bold text-gray-900">
+                <DialogContent className="w-[420px] max-w-[85vw] mx-auto bg-white/95 backdrop-blur-sm border-0 shadow-2xl rounded-xl p-0">
+                  <DialogHeader className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+                    <DialogTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                      <MapPin className="h-5 w-5 text-teal-600" />
                       {rows.some((r) => r.id === editing?.id) ? "Edit Location" : "Add New Location"}
                     </DialogTitle>
                   </DialogHeader>
                   {editing && (
-                    <div className="grid gap-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="grid gap-2">
-                          <Label className="font-medium text-gray-700">Location Name</Label>
-                          <Input 
-                            value={editing.name} 
-                            onChange={(e) => setEditing({ ...editing, name: e.target.value })}
-                            className="border-gray-200 focus:border-teal-300 focus:ring-teal-200"
-                            placeholder="Enter location name"
-                          />
+                    <div className="space-y-3 p-5">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium text-gray-700">Location Name</Label>
+                                                     <Input 
+                             value={editing.name} 
+                             onChange={(e) => setEditing({ ...editing, name: e.target.value })}
+                             className="h-8 border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm"
+                             placeholder="Enter location name"
+                           />
                         </div>
-                        <div className="grid gap-2">
-                          <Label className="font-medium text-gray-700">Type</Label>
-                          <Select value={editing.type} onValueChange={(v) => setEditing({ ...editing, type: v as "office" | "remote" | "hybrid" })}>
-                            <SelectTrigger className="border-gray-200 focus:border-teal-300 focus:ring-teal-200">
-                              <SelectValue placeholder="Select type" />
-                            </SelectTrigger>
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium text-gray-700">Type</Label>
+                                                   <Select value={editing.type} onValueChange={(v) => setEditing({ ...editing, type: v as "office" | "remote" | "hybrid" })}>
+                           <SelectTrigger className="h-8 border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm">
+                             <SelectValue placeholder="Select type" />
+                           </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="office">Office</SelectItem>
                               <SelectItem value="remote">Remote</SelectItem>
@@ -350,52 +351,52 @@ export default function LocationMaster() {
                           </Select>
                         </div>
                       </div>
-                      <div className="grid gap-2">
-                        <Label className="font-medium text-gray-700">Address</Label>
-                        <Input 
-                          value={editing.address} 
-                          onChange={(e) => setEditing({ ...editing, address: e.target.value })}
-                          className="border-gray-200 focus:border-teal-300 focus:ring-teal-200"
-                          placeholder="Enter full address"
-                        />
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-gray-700">Address</Label>
+                                                 <Input 
+                           value={editing.address} 
+                           onChange={(e) => setEditing({ ...editing, address: e.target.value })}
+                           className="h-8 border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm"
+                           placeholder="Enter full address"
+                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="grid gap-2">
-                          <Label className="font-medium text-gray-700">City</Label>
-                          <Input 
-                            value={editing.city} 
-                            onChange={(e) => setEditing({ ...editing, city: e.target.value })}
-                            className="border-gray-200 focus:border-teal-300 focus:ring-teal-200"
-                            placeholder="Enter city"
-                          />
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium text-gray-700">City</Label>
+                                                     <Input 
+                             value={editing.city} 
+                             onChange={(e) => setEditing({ ...editing, city: e.target.value })}
+                             className="h-8 border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm"
+                             placeholder="Enter city"
+                           />
                         </div>
-                        <div className="grid gap-2">
-                          <Label className="font-medium text-gray-700">Country</Label>
-                          <Input 
-                            value={editing.country} 
-                            onChange={(e) => setEditing({ ...editing, country: e.target.value })}
-                            className="border-gray-200 focus:border-teal-300 focus:ring-teal-200"
-                            placeholder="Enter country"
-                          />
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium text-gray-700">Country</Label>
+                                                     <Input 
+                             value={editing.country} 
+                             onChange={(e) => setEditing({ ...editing, country: e.target.value })}
+                             className="h-8 border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm"
+                             placeholder="Enter country"
+                           />
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="grid gap-2">
-                          <Label className="font-medium text-gray-700">Capacity</Label>
-                          <Input 
-                            type="number"
-                            value={editing.capacity} 
-                            onChange={(e) => setEditing({ ...editing, capacity: parseInt(e.target.value) || 0 })}
-                            className="border-gray-200 focus:border-teal-300 focus:ring-teal-200"
-                            placeholder="Enter capacity"
-                          />
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium text-gray-700">Capacity</Label>
+                                                     <Input 
+                             type="number"
+                             value={editing.capacity} 
+                             onChange={(e) => setEditing({ ...editing, capacity: parseInt(e.target.value) || 0 })}
+                             className="h-8 border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm"
+                             placeholder="Enter capacity"
+                           />
                         </div>
-                        <div className="grid gap-2">
-                          <Label className="font-medium text-gray-700">Status</Label>
-                          <Select value={editing.status} onValueChange={(v) => setEditing({ ...editing, status: v as "active" | "inactive" })}>
-                            <SelectTrigger className="border-gray-200 focus:border-teal-300 focus:ring-teal-200">
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium text-gray-700">Status</Label>
+                                                     <Select value={editing.status} onValueChange={(v) => setEditing({ ...editing, status: v as "active" | "inactive" })}>
+                             <SelectTrigger className="h-8 border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm">
+                               <SelectValue placeholder="Select status" />
+                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="active">Active</SelectItem>
                               <SelectItem value="inactive">Inactive</SelectItem>
@@ -403,27 +404,27 @@ export default function LocationMaster() {
                           </Select>
                         </div>
                       </div>
-                      <div className="grid gap-2">
-                        <Label className="font-medium text-gray-700">Description</Label>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-gray-700">Description</Label>
                         <Textarea 
                           value={editing.description || ""} 
                           onChange={(e) => setEditing({ ...editing, description: e.target.value })}
-                          className="border-gray-200 focus:border-teal-300 focus:ring-teal-200"
+                          className="border-gray-200 focus:border-teal-300 focus:ring-teal-200 text-sm"
                           placeholder="Enter location description"
-                          rows={3}
+                          rows={2}
                         />
                       </div>
-                      <div className="flex justify-end gap-3 pt-4">
+                      <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-6">
                         <Button 
                           variant="outline" 
                           onClick={() => setOpen(false)}
-                          className="border-gray-200 text-gray-700 hover:bg-gray-50"
+                          className="h-8 px-3 text-sm border-gray-200 text-gray-700 hover:bg-gray-50"
                         >
                           Cancel
                         </Button>
                         <Button 
                           onClick={submit}
-                          className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white"
+                          className="h-8 px-4 text-sm bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white"
                         >
                           {rows.some((r) => r.id === editing.id) ? "Update Location" : "Create Location"}
                         </Button>
